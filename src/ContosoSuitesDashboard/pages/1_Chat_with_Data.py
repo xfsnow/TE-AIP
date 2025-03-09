@@ -24,7 +24,9 @@ def create_chat_completion(messages):
     search_index_name = st.secrets["search"]["index_name"]
 
     client = openai.AzureOpenAI(
-        azure_ad_token_provider=token_provider,
+        # 做着做着突然 token_provider 就不行了，换成 api_key 就可以了
+        # azure_ad_token_provider=token_provider,
+        api_key=st.secrets["aoai"]["key"],
         api_version="2024-06-01",
         azure_endpoint = aoai_endpoint
     )
