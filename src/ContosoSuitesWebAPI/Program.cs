@@ -70,8 +70,26 @@ builder.Services.AddSingleton<Kernel>((_) =>
         apiKey: builder.Configuration["AzureOpenAI:ApiKey"]!
     );
     #pragma warning restore SKEXP0010 // Type is for evaluation purposes only and is subject to change or removal in future updates. Suppress this diagnostic to proceed.
+
+    // define a plugin from the MaintenanceRequestPlugin type
+    kernelBuilder.Plugins.AddFromType<MaintenanceRequestPlugin>("MaintenanceCopilot");
+    kernelBuilder.Services.AddSingleton<CosmosClient>((_) =>
+      {
+          string userAssignedClientId = builder.Configuration["AZURE_CLIENT_ID"]!;
+          var credential = new DefaultAzureCredential(
+              new DefaultAzureCredentialOptions
+              {
+                  ManagedIdentityClientId = userAssignedClientId
+              });
+          CosmosClient client = new(
+              accountEndpoint: builder.Configuration["CosmosDB:AccountEndpoint"]!,
+              tokenCredential: credential
+          );
+          return client;
+      });
     return kernelBuilder.Build();
 });
+
 
 
 
